@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Spotter: AI Form Coach</title>
+  <meta name="description" content="Real-time rep counting and form feedback from your phone camera. Runs fully on-device.">
+  <meta name="theme-color" content="#000000">
+  <meta name="color-scheme" content="dark">
+
+  <!-- PWA: manifest for Android/desktop, apple-* tags for iOS home-screen apps -->
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Spotter">
+
+  <link rel="stylesheet" href="css/styles.css">
+  <script type="module" src="js/app.js"></script>
+</head>
+<body>
+  <!-- ============ HOME ============ -->
+  <section id="screen-home" class="screen">
+    <header class="topbar">
+      <div class="brand">
+        <svg class="brand-mark" viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-logo"/></svg>
+        <span>Spotter</span>
+      </div>
+      <button id="btn-history" class="icon-btn" aria-label="Workout history">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-history"/></svg>
+      </button>
+    </header>
+
+    <main class="content">
+      <section class="hero">
+        <p class="eyebrow">On-device AI form coach</p>
+        <h1>Every rep counted.<br>Every rep coached.</h1>
+        <p class="lede">Prop up your phone, pick an exercise and train. Pose tracking runs on your phone, so your video never leaves it.</p>
+      </section>
+
+      <section aria-labelledby="exercise-label">
+        <h2 id="exercise-label" class="section-label">Exercise</h2>
+        <div id="exercise-grid" class="exercise-grid" role="radiogroup" aria-labelledby="exercise-label"></div>
+        <p id="setup-tip" class="setup-tip"></p>
+      </section>
+
+      <section aria-labelledby="settings-label">
+        <h2 id="settings-label" class="section-label">Settings</h2>
+        <div class="list-group">
+          <div class="list-row">
+            <span>Camera</span>
+            <div class="seg" id="seg-facing" role="group" aria-label="Camera">
+              <button type="button" data-value="user">Front</button>
+              <button type="button" data-value="environment">Rear</button>
+            </div>
+          </div>
+          <div class="list-row">
+            <span>Countdown</span>
+            <div class="seg" id="seg-countdown" role="group" aria-label="Countdown seconds">
+              <button type="button" data-value="0">Off</button>
+              <button type="button" data-value="3">3s</button>
+              <button type="button" data-value="5">5s</button>
+              <button type="button" data-value="10">10s</button>
+            </div>
+          </div>
+          <div class="list-row">
+            <span>Target reps</span>
+            <div class="stepper" aria-label="Target reps">
+              <button type="button" id="target-minus" aria-label="Fewer reps">−</button>
+              <output id="target-value" aria-live="polite">Off</output>
+              <button type="button" id="target-plus" aria-label="More reps">+</button>
+            </div>
+          </div>
+          <div class="list-row">
+            <label for="toggle-voice">Voice cues</label>
+            <button type="button" id="toggle-voice" class="switch" role="switch" aria-checked="true"><span></span></button>
+          </div>
+        </div>
+      </section>
+
+      <section aria-labelledby="week-label">
+        <div class="row-between">
+          <h2 id="week-label" class="section-label">Last 7 days</h2>
+          <button type="button" id="btn-history-link" class="text-btn">History →</button>
+        </div>
+        <div id="week-stats" class="stat-grid"></div>
+      </section>
+
+      <div class="foot-notes">
+        <p id="offline-status" class="status-line">Preparing offline mode…</p>
+        <button type="button" id="btn-install" class="btn btn-secondary" hidden>Install app</button>
+        <p id="ios-install-hint" class="fine-print" hidden>To install: tap Share, then “Add to Home Screen”.</p>
+        <p class="fine-print">Pose estimation by Google MediaPipe, running in your browser. Camera frames are never uploaded. The MediaPipe library sends anonymous performance metrics to Google.</p>
+      </div>
+    </main>
+
+    <footer class="cta-bar">
+      <button type="button" id="btn-start" class="btn btn-primary btn-lg">Start set</button>
+    </footer>
+  </section>
+
+  <!-- ============ WORKOUT ============ -->
+  <section id="screen-workout" class="screen workout" hidden>
+    <div class="stage">
+      <video id="video" playsinline muted autoplay></video>
+      <canvas id="overlay"></canvas>
+    </div>
+    <div id="flash" class="flash"></div>
+
+    <div class="hud-top">
+      <button type="button" id="btn-end" class="pill-btn">End set</button>
+      <div class="hud-title">
+        <span id="hud-exercise"></span>
+        <span id="hud-status" class="hud-status"></span>
+      </div>
+      <div class="hud-actions">
+        <button type="button" id="btn-voice" class="icon-btn glass" aria-label="Voice cues" aria-pressed="true">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-voice"/></svg>
+        </button>
+        <button type="button" id="btn-flip" class="icon-btn glass" aria-label="Switch camera">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-flip"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="hud-counter" aria-live="polite">
+      <div class="rep-line">
+        <span id="rep-count" class="rep-count">0</span>
+        <span id="rep-target" class="rep-target"></span>
+      </div>
+      <div class="rep-caption"><span id="rep-label">reps</span><span id="partial-count"></span></div>
+      <div id="rep-dots" class="rep-dots"></div>
+    </div>
+
+    <div class="meter" aria-hidden="true">
+      <span class="meter-label">Range</span>
+      <div class="meter-track">
+        <div id="meter-fill" class="meter-fill"></div>
+        <div id="meter-good" class="meter-mark"></div>
+      </div>
+      <span id="meter-angle" class="meter-angle">–</span>
+    </div>
+
+    <div class="hud-bottom">
+      <div id="live-cue" class="live-cue" hidden></div>
+      <div id="feedback" class="feedback" hidden></div>
+    </div>
+
+    <div id="hint" class="hint" hidden></div>
+    <div id="countdown" class="countdown" hidden></div>
+    <div id="loading" class="loading" hidden>
+      <div class="spinner" aria-hidden="true"></div>
+      <p id="loading-text">Loading…</p>
+      <button type="button" id="btn-loading-back" class="btn btn-secondary" hidden>Back</button>
+    </div>
+    <div id="fps" class="fps"></div>
+  </section>
+
+  <!-- ============ SUMMARY ============ -->
+  <section id="screen-summary" class="screen" hidden>
+    <header class="topbar">
+      <button type="button" id="btn-summary-back" class="icon-btn" aria-label="Back">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-back"/></svg>
+      </button>
+      <span class="topbar-title" id="summary-title">Set complete</span>
+      <span class="icon-btn-spacer"></span>
+    </header>
+    <main class="content" id="summary-content"></main>
+    <footer class="cta-bar two" id="summary-actions">
+      <button type="button" id="btn-done" class="btn btn-secondary btn-lg">Done</button>
+      <button type="button" id="btn-again" class="btn btn-primary btn-lg">Another set</button>
+    </footer>
+  </section>
+
+  <!-- ============ HISTORY ============ -->
+  <section id="screen-history" class="screen" hidden>
+    <header class="topbar">
+      <button type="button" id="btn-history-back" class="icon-btn" aria-label="Back">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-back"/></svg>
+      </button>
+      <span class="topbar-title">History</span>
+      <button type="button" id="btn-clear" class="text-btn danger">Clear</button>
+    </header>
+    <main class="content" id="history-content"></main>
+  </section>
+
+  <div id="toast" class="toast" role="status" hidden></div>
+
+  <!-- Icon sprite: each <symbol> is drawn once and reused with <use href="#id">. -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="icon-logo" viewBox="0 0 24 24"><path d="M4 19.5h16M4 19.5 15 5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M11 19.5a7 7 0 0 0-2.4-5.3" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></symbol>
+    <symbol id="icon-history" viewBox="0 0 24 24"><path d="M3.5 12a8.5 8.5 0 1 0 2.5-6M3.5 4.5V9H8M12 7.5V12l3 2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="icon-back" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="icon-flip" viewBox="0 0 24 24"><path d="M4 9.5V8a2 2 0 0 1 2-2h2l1.5-2h5L16 6h2a2 2 0 0 1 2 2v1.5M20 14.5V16a2 2 0 0 1-2 2h-2.5M4 14.5V16a2 2 0 0 0 2 2h2.5M10 15.5 8 18l2 2.5M14 15.5l2 2.5-2 2.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="icon-voice" viewBox="0 0 24 24"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path class="voice-waves" d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path class="voice-mute" d="M16 9.5l5 5M21 9.5l-5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+    <symbol id="ex-squat" viewBox="0 0 48 48"><circle cx="23" cy="9" r="4"/><path d="M21.5 14.5 14 26l12 2-2 12h5M21.5 15.5 34 17"/></symbol>
+    <symbol id="ex-lunge" viewBox="0 0 48 48"><circle cx="24" cy="8" r="4"/><path d="M24 13.5V26l9 1v12h4M24 26l-6 11h-8M24 15.5l-3 9"/></symbol>
+    <symbol id="ex-curl" viewBox="0 0 48 48"><circle cx="21" cy="8" r="4"/><path d="M21 13.5V28l-2 12M21 28l3 12M21 15.5l1.5 9.5 7.5-6"/><path d="M27 15v8M33 15v8M27 19h6"/></symbol>
+    <symbol id="ex-pushup" viewBox="0 0 48 48"><circle cx="9" cy="21" r="3.5"/><path d="M14 24l13 5 14 5M14 24v13M6 37.5h36" /></symbol>
+  </svg>
+</body>
+</html>
