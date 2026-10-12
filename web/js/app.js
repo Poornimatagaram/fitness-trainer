@@ -312,7 +312,7 @@ function updateHud(exercise, frame, landmarks) {
     return;
   }
   hud.setHint('');
-  hud.setStatus(`Tracking ${frame.side} side · ${frame.view} view`);
+  hud.setStatus(`${frame.side === 'left' ? 'Left' : 'Right'} side · ${frame.view} view`);
   hud.updateMeter(exercise, frame.angle);
 
   const cue = frame.liveCues[0] ?? '';
