@@ -1,0 +1,14 @@
+{
+  "name": "spotter",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Spotter: an on-device AI gym form coach (PWA). No build step; this file only exists to run tests.",
+  "type": "module",
+  "scripts": {
+    "test": "node --test \"web/tests/*.test.js\"",
+    "serve": "python3 -m http.server 8000 --directory web"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
