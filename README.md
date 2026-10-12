@@ -2,9 +2,9 @@
 
 **Prop your phone up, pick an exercise, and train. Spotter counts your reps and coaches your form in real time, with the pose model running in your phone's browser so your video never leaves the device.**
 
-<!-- Badges: replace <your-username> after pushing to GitHub -->
-[![CI](https://github.com/<your-username>/fitness-trainer/actions/workflows/ci.yml/badge.svg)](https://github.com/<your-username>/fitness-trainer/actions/workflows/ci.yml)
-**Live demo:** `https://<your-username>.github.io/fitness-trainer/` (open on your phone, then *Add to Home Screen*)
+<!-- CI badge and demo link go live after you push and enable Pages -->
+[![CI](https://github.com/Poornimatagaram/fitness-trainer/actions/workflows/ci.yml/badge.svg)](https://github.com/Poornimatagaram/fitness-trainer/actions/workflows/ci.yml)
+**Live demo:** `https://poornimatagaram.github.io/fitness-trainer/` (open on your phone, then *Add to Home Screen*)
 
 <!-- DEMO GIF PLACEHOLDER: record a 10–15 s screen capture of a real set on your phone
      (e.g. iOS screen recording -> convert with `ffmpeg -i in.mov -vf "fps=12,scale=360:-1" demo.gif`)
@@ -134,7 +134,7 @@ The pose model (`pose_landmarker_lite.task`, ~6 MB) downloads to `python/models/
 
 1. Push this repo to GitHub.
 2. In **Settings → Pages**, set **Source: GitHub Actions**.
-3. Push to `main`. [`.github/workflows/pages.yml`](.github/workflows/pages.yml) runs the JS tests, copies `web/` (without its tests) and publishes it to `https://<your-username>.github.io/<repo>/`.
+3. Push to `main`. [`.github/workflows/pages.yml`](.github/workflows/pages.yml) runs the JS tests, copies `web/` (without its tests) and publishes it to `https://poornimatagaram.github.io/fitness-trainer/`.
 
 Every path in the app is relative (`./sw.js`, `start_url: "./"`), so it works under the `/<repo>/` sub-path without configuration. A guard test enforces this.
 

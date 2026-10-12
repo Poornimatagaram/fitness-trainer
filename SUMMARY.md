@@ -15,7 +15,7 @@
 - **CI/CD**: GitHub Actions runs both suites on every push and deploys `web/` to GitHub Pages from `main`.
 - **Docs**: `README.md` (overview, architecture diagrams, setup, deployment, evaluation) and `LEARNING.md` (a beginner-friendly deep dive plus interview Q&A).
 
-All work is in 12 local commits on `main`. **Nothing has been pushed.**
+All work is in local commits on `main` (`git log --oneline` shows each step). **Nothing has been pushed.**
 
 ## How to run it locally
 
@@ -60,7 +60,7 @@ These need a real phone and a real body, which I couldn't do:
 - [ ] Frame rate (bottom-right of the workout screen) and phone heat during a 2-minute set.
 - [ ] The back gesture during a set ends it and shows the summary; history survives closing the app.
 - [ ] Record 5–10 of your own labelled sets, add them to `eval/labels.csv`, run `python eval/evaluate.py --engine both`, and paste the table into the README's results placeholder.
-- [ ] Replace `<your-username>` in the README badge and demo link, and add `docs/demo.gif`.
+- [ ] Check the README badge and demo link (filled in from your `origin` remote) work after deploying, and add `docs/demo.gif`.
 
 ## Known limitations
 
