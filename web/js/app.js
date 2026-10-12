@@ -38,6 +38,7 @@ const workout = {
   countdownEndsAt: 0,
   lastSecond: null,
   lastVideoTime: -1,
+  loopToken: 0, // starting a new frame loop (e.g. after a camera flip) retires the old one
   spokenThisRep: new Set(), // live cues already spoken during the current rep
   targetAnnounced: false,
   fps: { frames: 0, since: 0 },
@@ -203,7 +204,7 @@ async function startSet() {
   workout.countdownEndsAt = performance.now() + settings.countdown * 1000;
   workout.lastSecond = null;
   if (settings.countdown > 0) voice.say('Get in position');
-  requestAnimationFrame(loop);
+  startLoop();
 }
 
 /** (Re)start the camera with the current facing setting. */
@@ -231,14 +232,28 @@ function failStart(message) {
   hud.setLoading(message, { error: true });
 }
 
-/** Called on every animation frame while a set is running. */
-function loop() {
-  if (!workout.running) return;
-  requestAnimationFrame(loop);
-  tickCountdown(performance.now());
-
+/**
+ * Run processFrame once per new camera frame. requestVideoFrameCallback fires
+ * exactly when the camera delivers a frame (e.g. 30 fps), so we never run the
+ * model twice on the same picture. Older browsers fall back to
+ * requestAnimationFrame (once per screen refresh).
+ */
+function startLoop() {
+  const token = ++workout.loopToken;
   const video = $('video');
-  if (video.readyState < 2 || video.currentTime === workout.lastVideoTime) return; // no new frame yet
+  const tick = () => {
+    if (!workout.running || token !== workout.loopToken) return;
+    if (video.requestVideoFrameCallback) video.requestVideoFrameCallback(tick);
+    else requestAnimationFrame(tick);
+    processFrame(video);
+  };
+  tick();
+}
+
+function processFrame(video) {
+  tickCountdown(performance.now());
+  // rAF fallback only: skip refreshes where the camera has no new frame yet.
+  if (video.readyState < 2 || video.currentTime === workout.lastVideoTime) return;
   workout.lastVideoTime = video.currentTime;
 
   const now = performance.now();
@@ -366,6 +381,7 @@ async function flipCamera() {
   const session = workout.session;
   try {
     await openCamera(session);
+    if (workout.running && workout.detector) startLoop(); // re-attach to the new stream's frames
   } catch (error) {
     if (session === workout.session) toast(cameraErrorMessage(error));
   }
