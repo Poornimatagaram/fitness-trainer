@@ -23,7 +23,9 @@ export class Voice {
    */
   say(text, { interrupt = true } = {}) {
     if (!this.supported || !this.enabled || !text) return;
-    if (interrupt) speechSynthesis.cancel();
+    // Only cancel when something is queued: some Android builds drop the next
+    // utterance if cancel() is called while idle.
+    if (interrupt && (speechSynthesis.speaking || speechSynthesis.pending)) speechSynthesis.cancel();
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = 'en-US';
     utterance.rate = 1.08;

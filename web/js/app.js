@@ -21,6 +21,7 @@ const voice = new Voice();
 const TARGET_STEPS = [0, 5, 8, 10, 12, 15, 20, 25, 30];
 
 let settings = store.loadSettings();
+if (!EXERCISES[settings.exercise]) settings.exercise = 'squat'; // e.g. saved by an older version
 let detectorPromise = null; // the model is loaded once and reused for every set
 let summaryReturnsTo = 'home';
 
@@ -255,7 +256,7 @@ function loop() {
   drawOverlay($('overlay'), video, landmarks, {
     mirrored: workout.mirrored,
     joints: exercise.joints,
-    side: frame?.side ?? null,
+    side: frame?.tracked ? frame.side : null, // only highlight a limb we are actually measuring
     angle: frame?.angle ?? null,
     warn: (frame?.liveCues.length ?? 0) > 0,
   });
