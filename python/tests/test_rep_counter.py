@@ -71,6 +71,12 @@ def test_long_tracking_loss_abandons_rep():
     assert (counter.reps, counter.partials) == (1, 0)
 
 
+def test_split_second_glitch_is_ignored():
+    knees = [175] * 10 + [60] * 4 + [175] * 10
+    counter = run(RepCounter(EXERCISES["squat"]), [side_pose(knee=k) for k in knees])
+    assert counter.reps + counter.partials == 0
+
+
 def test_lunge_curl_pushup():
     lunges = [side_pose(knee=k, torso_lean=40) for k in trajectory([170, 92, 170, 92, 170])]
     counter = run(RepCounter(EXERCISES["lunge"]), lunges)

@@ -1,0 +1,17 @@
+# Ground-truth rep counts for eval/evaluate.py. Lines starting with # are ignored.
+# video: file name inside eval/videos/   exercise: squat | lunge | curl | pushup
+# true_reps: reps a human counted (full reps only)   view: camera angle, for slicing results
+#
+# Sample clips (fetch with: python eval/download_samples.py). Counts verified frame by frame.
+video,exercise,true_reps,view,notes
+squat_demo.webm,squat,2,rear-3/4,barbell back squat; FitnessScape (CC BY 3.0)
+pushups_side.webm,pushup,6,side,silhouette against sky; Taco fleur (CC BY-SA 4.0)
+#
+# Your own recordings: film each set on your phone, drop the file in eval/videos/,
+# count the reps yourself, then uncomment/add a row. Aim for variety: side and
+# front views, good and bad form, different lighting and clothing.
+# my_squat_side_01.mp4,squat,10,side,bodyweight
+# my_squat_front_01.mp4,squat,8,front,knees caving on purpose for reps 5-8
+# my_lunge_side_01.mp4,lunge,10,side,alternating legs
+# my_curl_side_01.mp4,curl,12,side,dumbbell
+# my_pushup_side_01.mp4,pushup,15,side,phone on the floor

@@ -54,7 +54,8 @@ export const EXERCISES = {
     name: 'Bicep Curl',
     muscles: 'Biceps',
     joints: ['shoulder', 'elbow', 'wrist'],
-    thresholds: { start: 120, end: 150, good: 60, perfect: 45 },
+    // A straight arm only reads ~150-155° in 2D (see the push-up eval clip), so lockout is 140.
+    thresholds: { start: 110, end: 140, good: 60, perfect: 45 },
     cues: {
       perfect: 'Full squeeze!',
       good: 'Good curl',
@@ -72,7 +73,8 @@ export const EXERCISES = {
     name: 'Push-up',
     muscles: 'Chest · Triceps',
     joints: ['shoulder', 'elbow', 'wrist'],
-    thresholds: { start: 140, end: 155, good: 100, perfect: 90 },
+    // Calibrated on real video: locked-out arms plateau at ~150-155°, so 155 missed reps.
+    thresholds: { start: 130, end: 145, good: 100, perfect: 90 },
     cues: {
       perfect: 'Chest to floor!',
       good: 'Good push-up',

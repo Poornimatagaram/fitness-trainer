@@ -102,6 +102,12 @@ test('squat: a brief dropout (a few frames) does not break the rep', () => {
   assert.equal(counter.reps, 1);
 });
 
+test('squat: a split-second glitch (e.g. a camera cut) is ignored, not counted', () => {
+  const knees = [...Array(10).fill(175), ...Array(4).fill(60), ...Array(10).fill(175)];
+  const counter = run(new RepCounter(EXERCISES.squat), knees.map((knee) => sidePose({ knee })));
+  assert.equal(counter.reps + counter.partials, 0);
+});
+
 test('lunge: counts reps and flags a leaning torso', () => {
   const frames = trajectory([170, 92, 170, 92, 170]).map((knee) => sidePose({ knee, torsoLean: 40 }));
   const counter = run(new RepCounter(EXERCISES.lunge), frames);

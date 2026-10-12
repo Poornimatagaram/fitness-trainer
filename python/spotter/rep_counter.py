@@ -14,6 +14,7 @@ from .geometry import EmaFilter, js_round
 
 SMOOTHING_SECONDS = 0.08  # EMA time constant for angles and metrics
 LOST_TIMEOUT_SECONDS = 1.0  # abandon a rep if the body is hidden this long
+MIN_REP_SECONDS = 0.4  # faster "reps" are tracking glitches (e.g. camera cuts), not movement
 ISSUE_PENALTY = 15  # score points lost per form issue
 METRICS = ["torsoLean", "elbowDrift", "hipSag", "kneeWidthRatio"]
 
@@ -93,15 +94,17 @@ class RepCounter:
         _track_rep(self.rep, f)
 
     def _finish_rep(self, t, locked_out):
-        result = grade_rep(self.exercise, self.rep, t, locked_out)
+        rep, self.phase, self.rep = self.rep, "up", None
+        if t - rep["startT"] < MIN_REP_SECONDS:
+            return None  # too fast to be a real rep: ignore it
+
+        result = grade_rep(self.exercise, rep, t, locked_out)
         if result["counted"]:
             self.reps += 1
         else:
             self.partials += 1
         result["number"] = self.reps if result["counted"] else None
         self.results.append(result)
-        self.phase = "up"
-        self.rep = None
         return result
 
     def _handle_lost(self, t):

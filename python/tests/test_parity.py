@@ -33,6 +33,7 @@ def _scenarios():
     curls = [side_pose(elbow=e, upper_arm=50 if e < 100 else 10, aspect=A) for e in trajectory([170, 40, 170, 70, 170])]
     pushups = [plank_pose(elbow=e, hip_sag=-30, aspect=A) for e in trajectory([170, 80, 170, 95, 170])]
     front = [front_pose(knee_ratio=0.6, aspect=A)] * 10  # front view: no rep, exercises view detection path
+    glitch = [side_pose(knee=k, aspect=A) for k in [175] * 10 + [60] * 4 + [175] * 10 + trajectory([175, 88, 175])]
     return {
         "squat-lean": ("squat", squat_lean),
         "squat-noisy": ("squat", noisy),
@@ -42,6 +43,7 @@ def _scenarios():
         "curl-drift": ("curl", curls),
         "pushup-pike": ("pushup", pushups),
         "squat-front": ("squat", front),
+        "squat-glitch": ("squat", glitch),
     }
 
 

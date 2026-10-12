@@ -16,6 +16,7 @@ import { depthProgress } from './exercises.js';
 
 export const SMOOTHING_SECONDS = 0.08; // EMA time constant for angles and metrics
 export const LOST_TIMEOUT_SECONDS = 1.0; // abandon a rep if the body is hidden this long
+export const MIN_REP_SECONDS = 0.4; // faster "reps" are tracking glitches (e.g. camera cuts), not movement
 export const ISSUE_PENALTY = 15; // score points lost per form issue
 const METRICS = ['torsoLean', 'elbowDrift', 'hipSag', 'kneeWidthRatio'];
 
@@ -108,13 +109,16 @@ export class RepCounter {
   }
 
   finishRep(t, lockedOut) {
-    const result = gradeRep(this.exercise, this.rep, t, lockedOut);
+    const rep = this.rep;
+    this.phase = 'up';
+    this.rep = null;
+    if (t - rep.startT < MIN_REP_SECONDS) return null; // too fast to be a real rep: ignore it
+
+    const result = gradeRep(this.exercise, rep, t, lockedOut);
     if (result.counted) this.reps += 1;
     else this.partials += 1;
     result.number = result.counted ? this.reps : null;
     this.results.push(result);
-    this.phase = 'up';
-    this.rep = null;
     return result;
   }
 
