@@ -1,1 +1,18 @@
+# Python
 venv/
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Downloaded MediaPipe model files (fetched on first run)
+python/models/
+
+# Evaluation inputs/outputs that are large or personal
+eval/videos/*
+!eval/videos/.gitkeep
+eval/cache/
+
+# OS / editor / Node
+.DS_Store
+node_modules/
