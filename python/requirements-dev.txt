@@ -1,0 +1,2 @@
+# Test dependencies. The tests use synthetic landmarks, so they do not need MediaPipe or a camera.
+pytest>=8

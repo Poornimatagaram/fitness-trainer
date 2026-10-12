@@ -1,0 +1,4 @@
+# Runtime dependencies for the live webcam coach and the evaluator.
+# The spotter package itself (rep logic) uses only the standard library.
+mediapipe>=0.10.9
+opencv-python>=4.8
